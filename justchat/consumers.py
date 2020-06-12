@@ -44,7 +44,7 @@ class OMConsumer(AsyncJsonWebsocketConsumer):
                 }
             )
             self.rooms.add(room_id)
-            print(f"self.rooms:{self.rooms}")
+            print(f"self.rooms:{self.rooms} :: self.channel_name:{self.channel_name}")
             # Add them to the group so they get room messages
             await self.channel_layer.group_add(
                 room.group_name,
@@ -84,7 +84,6 @@ class OMConsumer(AsyncJsonWebsocketConsumer):
         print(f"send_room self.rooms : {self.rooms}")
         if int(room_id) not in self.rooms:
             raise ClientError("ROOM_ACCESS_DENIED")
-        print("testing................")
         room = await get_room_or_error(room_id, self.scope["user"])
         await self.channel_layer.group_send(
             room.group_name,
