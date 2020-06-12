@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Chat Page</title>
-</head>
-<body>
+{% extends "chat/base.html" %}
+
+{% block content %}
     <ul>
         {% for room in rooms %}
             <li>
@@ -16,8 +12,8 @@
         {% endfor %}
     </ul>
 
-</body>
-
+{% endblock %}
+{% block extra_body %}
 <script>
     const chatSocket = new WebSocket('ws://'+window.location.host+'/om/chat/');
 
@@ -63,5 +59,5 @@
 
 
 </script>
+{% endblock %}
 
-</html>

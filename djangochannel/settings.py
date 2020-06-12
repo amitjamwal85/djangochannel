@@ -147,3 +147,8 @@ MSG_TYPE_MUTED = 3  # For just OK information that doesn't bother registration
 MSG_TYPE_ENTER = 4  # For just OK information that doesn't bother registration
 MSG_TYPE_LEAVE = 5  # For just OK information that doesn't bother registration
 
+
+LOGIN_REDIRECT_URL = "/chat"
+LOGOUT_REDIRECT_URL = "/accounts/login"
+
+

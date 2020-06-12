@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.contrib.auth.decorators import login_required
 from justchat.models import Room
 
 
@@ -17,6 +17,7 @@ def room(request, room_name):
     })
 
 
+@login_required
 def omchat(request):
     rooms = Room.objects.order_by("title")
     return render(request, 'chat/omchat.html', {
