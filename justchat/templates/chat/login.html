@@ -1,0 +1,51 @@
+{%  load staticfiles %}
+<html>
+<head>
+</head>
+<body>
+	<button onclick="showNotification()">Show</button>
+</body>
+
+
+
+<script>
+
+ Notification.requestPermission(function(status) {
+     console.log('Status: ', status);
+ });
+
+function showNotification() {
+
+    let options = {
+                icon:'{% static 'favicon.png' %}',
+                body: 'Test notification message.',
+                dir: 'ltr', // use for direction of message
+                image:'{% static 'logo.png' %}',
+                badge: '{% static 'favicon.png' %}',
+            };
+    let notify = new Notification('Title', options);
+
+    notify.onclick = function(event) {
+      event.preventDefault(); // prevent the browser from focusing the Notification's tab
+      window.open('http://www.mozilla.org', '_blank');
+    };
+
+
+    {% comment %}if(window.Notification) {
+        Notification.requestPermission(function(status) {
+            console.log('Status: ', status); // show notification permission if permission granted then show otherwise message will not show
+            let options = {
+                body: 'Test notification message.',
+                dir: 'ltr', // use for direction of message
+                image:'{% static 'logo.png' %}'
+            }
+            new Notification('Title', options);
+        });
+    }
+    else {
+        alert('Your browser doesn\'t support notifications.');
+    }{% endcomment %}
+}
+</script>
+
+</html>

@@ -1,0 +1,13 @@
+# Editor directories and files
+.idea
+*.pyc
+*.csv
+.env
+
+bin
+lib
+logs
+pyvenv.cfg
+static
+
+

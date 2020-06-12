@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Page</title>
+</head>
+<body>
+    <ul>
+        {% for room in rooms %}
+            <li>
+                {{ room }}
+                <button onclick="joinroom({{ room.pk }})">Join</button>
+                <button onclick="sendmessage({{ room.pk }})">Send</button>
+            </li>
+            <br/>
+        {% endfor %}
+    </ul>
+
+</body>
+
+<script>
+    const chatSocket = new WebSocket('ws://'+window.location.host+'/om/chat/');
+
+    chatSocket.onmessage = function(message) {
+        console.log("onmessage:",message.data);
+        {% comment %}var data = JSON.parse(message.data);
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        if(data.join){
+             console.log("data.join:",data.join);
+             chatSocket.send(JSON.stringify({
+                "command": "send",
+                "room": data.join,
+                "message": "test_messsage"
+             }));
+        }{% endcomment %}
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+
+    function sendmessage(roomId) {
+        chatSocket.send(JSON.stringify({
+            "command": "send",
+            "room": roomId,
+            "message": "test"
+        }));
+    }
+
+    function joinroom(roomId) {
+        console.log("roomId:",roomId);
+        chatSocket.send(JSON.stringify({
+            "command": "join",
+            "room": roomId
+        }));
+    }
+    
+    
+
+
+</script>
+
+</html>
