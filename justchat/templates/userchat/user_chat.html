@@ -1,0 +1,135 @@
+{% extends "userchat/base.html" %}
+{% load staticfiles %}
+{% block title %}
+    User Chat
+{% endblock %}
+
+{% block  content%}
+<br/>
+<div class="container-fluid h-100">
+   <div class="row justify-content-center h-100">
+      <div class="col-md-4 col-xl-3 chat">
+         <div class="card mb-sm-3 mb-md-0 contacts_card">
+            <div class="card-header">
+               <div class="input-group">
+                  <input type="text" placeholder="Search..." name="" class="form-control search">
+                  <div class="input-group-prepend">
+                     <span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
+                  </div>
+               </div>
+            </div>
+            <div class="card-body contacts_body">
+               <ui class="contacts">
+               {% for user in users %}
+                  <li class="d-flex bd-highlight" id="userlist{{ forloop.counter }}" onclick="open_chat('{{ user.id }}', '{{ forloop.counter }}')">
+                     <div class="d-flex bd-highlight">
+                        <div class="img_cont">
+                           <img src="{{ user.profile_image.url }}" class="rounded-circle user_img">
+                           <span class="online_icon"></span>
+                        </div>
+                        <div class="user_info">
+                           <span>{{ user.get_full_name }}</span>
+                           <p>{{ user.first_name }} is online</p>
+                        </div>
+                     </div>
+                  </li>
+               {% endfor %}
+               </ui>
+            </div>
+            <div class="card-footer"></div>
+         </div>
+      </div>
+      <div class="col-md-8 col-xl-6 chat" id="chat_block">
+
+      </div>
+   </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_body %}
+    <script>
+        let b_user_id_chat = 0;
+        let chat_block = document.getElementById('chat_block');
+        $(document).ready(function(){
+            $('#action_menu_btn').click(function(){
+                $('.action_menu').toggle();
+            });
+        console.log("a_user : "+ '{{ a_user }}');
+        load_chat_history({{ a_user.id }}, {{ users.first.id }}, 1);
+        });
+
+
+        function load_chat_history(a_user_id, b_user_id, div_id) {
+            b_user_id_chat = b_user_id;
+           $.ajax({
+                type: "GET",
+                cache: 'false',
+                url: "{% url 'chat_history' %}",
+                data: {b_user_id: b_user_id, a_user_id:a_user_id},
+                success: function (result) {
+                    $('#chat_block').html(result);
+                    chat_block.style.display = "block";
+                    $('#userlist'+div_id).addClass('active').removeClass('d-flex bd-highlight');
+                    makeActive(div_id)
+                    $('#chat_window').animate({scrollTop: $('#chat_window')[0].scrollHeight}, 1);
+                }
+            });
+        }
+
+
+        function makeActive(div_id) {
+            let count = {{ users.count }};
+            for (let i = 1; i <= count; i++) {
+                $('#userlist'+i).addClass('d-flex bd-highlight').removeClass('active');
+            }
+            $('#userlist'+div_id).addClass('active').removeClass('d-flex bd-highlight');
+        }
+
+
+        function open_chat(b_user_id, div_id) {
+            load_chat_history({{ a_user.id }}, b_user_id, div_id);
+        }
+
+        $('#text_message').keypress(function(event){
+            console.log("press enter");
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if(keycode === '13'){
+                sendChatMessage();
+            }
+        });
+        
+        
+        function sendChatMessage() {
+            let message = $('#text_message').val();
+            if (message === "")
+                return false;
+            console.log(message);
+
+            let chat_block = '<div class="d-flex justify-content-end mb-4">'+
+                             '<div class="msg_cotainer_send">'+
+                             message+
+                             '<span class="msg_time_send">8:55 AM, Today</span>'+
+                             '</div>'+
+                             '<div class="img_cont_msg">'+
+                             '<img src="{{ a_user.profile_image.url }}" class="rounded-circle user_img_msg">'+
+                             '</div></div>';
+
+
+
+            $.ajax({
+                type: "GET",
+                cache: 'false',
+                url: "{% url 'send_chat' %}",
+                data: {b_user_id: b_user_id_chat, a_user_id:{{ a_user.id }}, message:message},
+                success: function (result) {
+                    $('#chat_window').append(chat_block);
+                    $('#text_message').val("");
+                    $('#chat_window').animate({scrollTop: $('#chat_window')[0].scrollHeight}, 1);
+                }
+            });
+        }
+        
+    </script>
+{% endblock %}

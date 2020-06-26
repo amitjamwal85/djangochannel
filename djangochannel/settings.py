@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'justchat',
+    'rest_framework'
 ]
+
+AUTH_USER_MODEL = 'justchat.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -70,6 +73,14 @@ TEMPLATES = [
     },
 ]
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
 WSGI_APPLICATION = 'djangochannel.wsgi.application'
 ASGI_APPLICATION = 'djangochannel.routing.application'
 
@@ -81,6 +92,7 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
 
 
 # Database
@@ -137,6 +149,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
 
 
 NOTIFY_USERS_ON_ENTER_OR_LEAVE_ROOMS = True
@@ -148,7 +165,7 @@ MSG_TYPE_ENTER = 4  # For just OK information that doesn't bother registration
 MSG_TYPE_LEAVE = 5  # For just OK information that doesn't bother registration
 
 
-LOGIN_REDIRECT_URL = "/chat"
+LOGIN_REDIRECT_URL = "/userchat"
 LOGOUT_REDIRECT_URL = "/accounts/login"
 
 

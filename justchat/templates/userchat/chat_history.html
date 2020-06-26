@@ -1,0 +1,60 @@
+{% load staticfiles %}
+<div class="card">
+    <div class="card-header msg_head">
+       <div class="d-flex bd-highlight">
+          <div class="img_cont">
+             <img src="{{ b_user.profile_image.url }}" class="rounded-circle user_img">
+             <span class="online_icon"></span>
+          </div>
+          <div class="user_info">
+             <span>Chat with {{ b_user.get_full_name }}</span>
+             <p>10 Messages</p>
+          </div>
+       </div>
+    </div>
+    <div class="card-body msg_card_body" id="chat_window">
+        {% for message in messages %}
+            {% if message.a_party_user == a_user %}
+                 <div class="d-flex justify-content-end mb-4">
+                    <div class="msg_cotainer_send">
+                        {{ message.message }}
+                        <span class="msg_time_send">{{ message.created_at| date:"h:i A l" }}</span>
+                    </div>
+                    <div class="img_cont_msg">
+                    <img src="{{ message.a_party_user.profile_image.url }}" class="rounded-circle user_img_msg">
+                    </div>
+                </div>
+            {% else %}
+                <div class="d-flex justify-content-start mb-4">
+                  <div class="img_cont_msg">
+                     <img src="{{ message.b_party_user.profile_image.url }}" class="rounded-circle user_img_msg">
+                  </div>
+                  <div class="msg_cotainer">
+                     {{ message.message }}
+                     <span class="msg_time">{{ message.created_at| date:"h:i A l" }}</span>
+                  </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="card-footer">
+       <div class="input-group">
+          <div class="input-group-append">
+             <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
+          </div>
+          <input type="text"  class="form-control type_msg" id="text_message" placeholder="Type your message...">
+          <div class="input-group-append">
+             <span class="input-group-text send_btn" onclick="sendChatMessage()"><i class="fas fa-location-arrow"></i></span>
+          </div>
+       </div>
+    </div>
+ </div>
+
+
+
+
+
+
+
+
+
