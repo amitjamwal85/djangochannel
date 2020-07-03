@@ -5,7 +5,67 @@ from channels.generic.websocket import AsyncWebsocketConsumer, AsyncJsonWebsocke
 
 from djangochannel import settings
 from djangochannel.exceptions import ClientError
-from justchat.utils import get_room_or_error
+from justchat.utils import get_room_or_error, get_authenication
+
+
+class UserChatConsumer(AsyncJsonWebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.room_group_name = 'room'
+
+    async def connect(self):
+        print(f'Username: {self.scope["user"]}')
+        if self.scope["user"].is_anonymous:
+            await self.close()
+        else:
+            await self.accept()
+
+    async def receive_json(self, content=None, byte_data=None):
+        print(f"receive_json content: {content}")
+        command = content.get("command", None)
+        try:
+            if command == "join":
+                await self.join_room(content["user_id"])
+            elif command == "send":
+                await self.send_room(content["message"])
+        except ClientError as e:
+            print({"error": e.code})
+            await self.send_json({"error": e.code})
+
+    async def join_room(self, user_id):
+        print(f"user_id: {user_id} {self.room_group_name}")
+        check_status = await get_authenication(self.scope["user"])
+        if check_status:
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name,
+            )
+            print("User added successfully")
+
+    async def send_room(self, message):
+        print(f"send_room: {message}")
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "chat.message",
+                "username": self.scope["user"].username,
+                "message": message,
+            }
+        )
+
+    async def chat_message(self, event):
+        print(f"chat_message: {event}")
+        await self.send_json(
+            {
+                "msg_type": settings.MSG_TYPE_MESSAGE,
+                "room": self.room_group_name,
+                "username": event["username"],
+                "message": event["message"],
+            },
+        )
+
+
+####################################################################################################
 
 
 class OMConsumer(AsyncJsonWebsocketConsumer):

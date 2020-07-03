@@ -15,6 +15,7 @@
                   <input type="text" placeholder="Search..." name="" class="form-control search">
                   <div class="input-group-prepend">
                      <span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
+                      <button onclick="joinroom('{{ a_user.id }}')">Connect</button>
                   </div>
                </div>
             </div>
@@ -50,14 +51,56 @@
 
 {% block extra_body %}
     <script>
+
+        const chatSocket = new WebSocket('ws://'+window.location.host+'/user_chat/');
+
+        function joinroom(user_id) {
+            console.log("user_id : "+user_id);
+            chatSocket.send(JSON.stringify({
+                "command": "join",
+                "user_id": user_id
+            }));
+        }
+
+        function sendmessage(message) {
+            chatSocket.send(JSON.stringify({
+                "command": "send",
+                "message": message
+            }));
+        }
+
+        chatSocket.onmessage = function(event) {
+            var msg_obj = JSON.parse(event.data);
+            console.log("msg_obj : ",msg_obj.message);
+            let chat_block = '<div class="d-flex justify-content-start mb-4">'+
+                             '<div class="img_cont_msg">'+
+                             '<img src="{{ a_user.profile_image.url }}" class="rounded-circle user_img_msg">'+
+                             '</div>'+
+                             '<div class="msg_cotainer">'+
+                                msg_obj.message+
+                             '<span class="msg_time">8:55 AM, Today</span>'+
+                             '</div></div>';
+
+
+            $('#chat_window').append(chat_block);
+            $('#text_message').val("");
+            $('#chat_window').animate({scrollTop: $('#chat_window')[0].scrollHeight}, 1);
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
         let b_user_id_chat = 0;
         let chat_block = document.getElementById('chat_block');
+
         $(document).ready(function(){
             $('#action_menu_btn').click(function(){
                 $('.action_menu').toggle();
             });
-        console.log("a_user : "+ '{{ a_user }}');
-        load_chat_history({{ a_user.id }}, {{ users.first.id }}, 1);
+            console.log("a_user : "+ '{{ a_user }}');
+            load_chat_history({{ a_user.id }}, {{ users.first.id }}, 1);
+            {#joinroom('{{ a_user.id }}');#}
         });
 
 
@@ -129,6 +172,8 @@
                     $('#chat_window').animate({scrollTop: $('#chat_window')[0].scrollHeight}, 1);
                 }
             });
+
+            sendmessage(message);
         }
         
     </script>

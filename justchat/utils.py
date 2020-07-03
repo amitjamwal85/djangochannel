@@ -19,3 +19,10 @@ def get_room_or_error(room_id, user):
     if room.staff_only and not user.is_staff:
         raise ClientError("ROOM_ACCESS_DENIED")
     return room
+
+
+@database_sync_to_async
+def get_authenication(user):
+    if not user.is_authenticated:
+        raise ClientError("USER_HAS_TO_LOGIN")
+    return True
