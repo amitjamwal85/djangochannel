@@ -3,6 +3,7 @@
 *.pyc
 *.csv
 .env
+venv
 
 bin
 lib
