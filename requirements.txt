@@ -11,7 +11,7 @@ constantly==15.1.0
 cryptography==3.0
 daphne==2.5.0
 Django==2.2.1
-djangorestframework==3.11.1
+djangorestframework==3.11.2
 hiredis==1.1.0
 hyperlink==20.0.1
 idna==2.10
