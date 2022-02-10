@@ -10,7 +10,7 @@ channels-redis==3.0.1
 constantly==15.1.0
 cryptography==3.0
 daphne==2.5.0
-Django==2.2.1
+Django==2.2.27
 djangorestframework==3.11.1
 hiredis==1.1.0
 hyperlink==20.0.1
